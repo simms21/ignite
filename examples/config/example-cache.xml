@@ -48,6 +48,14 @@
             </list>
         </property>
 
+        <property name="ipcEndpointConfiguration">
+              <bean class="org.apache.ignite.igfs.IgfsIpcEndpointConfiguration">
+                <property name="type" value="TCP"/>
+                <property name="host" value="127.0.0.1"/>
+                <property name="port" value="10500"/>
+              </bean>
+          </property>
+
         <!-- Explicitly configure TCP discovery SPI to provide list of initial nodes. -->
         <property name="discoverySpi">
             <bean class="org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi">
