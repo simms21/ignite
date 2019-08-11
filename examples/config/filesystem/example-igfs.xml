@@ -18,78 +18,49 @@
 -->
 
 <!--
-    Ignite Spring configuration file to startup ignite cache.
+    Ignite Spring configuration file to startup Ignite cache.
+
+    This file demonstrates how to configure cache using Spring. Provided cache
+    will be created on node startup.
+
+    Use this configuration file when running HTTP REST examples (see 'examples/rest' folder).
 
     When starting a standalone node, you need to execute the following command:
-    {IGNITE_HOME}/bin/ignite.{bat|sh} examples/config/filesystem/example-igfs.xml
+    {IGNITE_HOME}/bin/ignite.{bat|sh} examples/config/example-cache.xml
 
-    When starting Ignite from Java IDE, pass path to this file into Ignition:
-    Ignition.start("examples/config/filesystem/example-igfs.xml");
+    When starting Ignite from Java IDE, pass path to this file to Ignition:
+    Ignition.start("examples/config/example-cache.xml");
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans
-       http://www.springframework.org/schema/beans/spring-beans.xsd">
-
-    <!--
-        Optional description.
-    -->
-    <description>
-        Spring file for ignite configuration with client available endpoints.
-    </description>
-
-    <!--
-        Initialize property configurer so we can reference environment variables.
-    -->
-    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_FALLBACK"/>
-        <property name="searchSystemEnvironment" value="true"/>
-    </bean>
-
-    <!--
-        Configuration below demonstrates how to setup a IgniteFs node with file data.
-    -->
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
     <bean id="ignite.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
-        <property name="marshaller">
-            <bean class="org.apache.ignite.internal.binary.BinaryMarshaller" />
-        </property>
 
         <property name="fileSystemConfiguration">
             <list>
                 <bean class="org.apache.ignite.configuration.FileSystemConfiguration">
-                    <property name="name" value="igfs"/>
-
-                    <!-- Must correlate with cache affinity mapper. -->
-                    <property name="blockSize" value="#{128 * 1024}"/>
-                    <property name="perNodeBatchSize" value="512"/>
-                    <property name="perNodeParallelBatchCount" value="16"/>
-
-                    <!-- Set number of prefetch blocks. -->
-                    <property name="prefetchBlocks" value="32"/>
-
-                    <!--
-                        Example of configured IPC loopback endpoint.
-                    -->
-                    
+                    <!-- Distinguished file system name. -->
+                    <property name="name" value="myFileSystem" />
                     <property name="ipcEndpointConfiguration">
                         <bean class="org.apache.ignite.igfs.IgfsIpcEndpointConfiguration">
-                          <property name="type" value="TCP"/>
-                          <property name="host" value="0.0.0.0"/>
-                          <property name="port" value="10500"/>
+                            <property name="type" value="TCP"/>
+                            <property name="host" value="0.0.0.0"/>
+                            <!--<property name="port" value="12345"/>-->
                         </bean>
                     </property>
-                    
+                </bean>
+            </list>
+        </property>
 
-                    <!--
-                        Example of configured shared memory endpoint.
-                    -->
-                    <!--
-                    <property name="ipcEndpointConfiguration">
-                        <bean class="org.apache.ignite.igfs.IgfsIpcEndpointConfiguration">
-                            <property name="type" value="SHMEM" />
-                        </bean>
-                    </property>
-                    -->
+        <property name="cacheConfiguration">
+            <list>
+                <!-- Partitioned cache example configuration (Atomic mode). -->
+                <bean class="org.apache.ignite.configuration.CacheConfiguration">
+                    <property name="name" value="default"/>
+                    <property name="atomicityMode" value="ATOMIC"/>
+                    <property name="backups" value="1"/>
                 </bean>
             </list>
         </property>
@@ -99,7 +70,7 @@
             <bean class="org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi">
                 <property name="ipFinder">
                     <!--
-                        Ignition provides several options for automatic discovery that can be used
+                        Ignite provides several options for automatic discovery that can be used
                         instead os static IP based discovery. For information on all options refer
                         to our documentation: http://apacheignite.readme.io/docs/cluster-config
                     -->
