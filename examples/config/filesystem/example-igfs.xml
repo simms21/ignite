@@ -74,7 +74,7 @@
                     <property name="ipcEndpointConfiguration">
                         <bean class="org.apache.ignite.igfs.IgfsIpcEndpointConfiguration">
                           <property name="type" value="TCP"/>
-                          <property name="host" value="127.0.0.1"/>
+                          <property name="host" value="0.0.0.0"/>
                           <property name="port" value="10500"/>
                         </bean>
                     </property>
